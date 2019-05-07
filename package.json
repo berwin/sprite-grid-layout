@@ -1,0 +1,41 @@
+{
+  "name": "sprite-grid-layout",
+  "version": "1.0.0",
+  "description": "Grid Layout Engine for SpriteJS",
+  "main": "./lib/index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.4.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "ava": "^1.4.1",
+    "eslint": "^5.16.0",
+    "eslint-config-sprite": "^1.0.6"
+  },
+  "scripts": {
+    "lint": "eslint 'src/**/*.js' --fix",
+    "build": "rm -rf lib/* && babel src -d lib",
+    "compile": "rm -rf lib/* && babel src -d lib --watch",
+    "test": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/berwin/sprite-grid-layout.git"
+  },
+  "keywords": [
+    "grid",
+    "spritejs"
+  ],
+  "author": "Berwin <liubowen.niubi@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/berwin/sprite-grid-layout/issues"
+  },
+  "homepage": "https://github.com/berwin/sprite-grid-layout#readme"
+}
