@@ -1,7 +1,12 @@
 import test from 'ava';
 import {Node} from '../lib';
 
-const container = Node.create({});
+const container = Node.create({
+  width: 500,
+  height: 500,
+  gridTemplateColumns: '1fr 1fr 1fr',
+  gridTemplateRows: '1fr 1fr',
+});
 
 const node1 = Node.create({
   width: 100,
