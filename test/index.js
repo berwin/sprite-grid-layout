@@ -3,28 +3,66 @@ import {Node} from '../lib';
 
 const container = Node.create({
   width: 500,
-  height: 500,
-  gridTemplateColumns: '1fr 1fr 1fr',
-  gridTemplateRows: '1fr 1fr',
+  height: 300,
+  gridTemplateColumns: 'auto 1fr',
+  gridTemplateRows: 'auto 1fr auto',
 });
 
-const node1 = Node.create({
+const title = Node.create({
   width: 100,
-  height: 100,
+  height: 25,
+  gridColumn: '1',
+  gridRow: '1',
 });
 
-const node2 = Node.create({
+const score = Node.create({
   width: 100,
-  height: 100,
+  height: 25,
+  gridColumn: '1',
+  gridRow: '3',
 });
 
-container.appendChild(node1);
-container.appendChild(node2);
+const stats = Node.create({
+  gridColumn: '1',
+  gridRow: '2',
+});
+
+const board = Node.create({
+  gridColumn: '2',
+  gridRow: '1 / span 2',
+});
+
+const controls = Node.create({
+  gridColumn: '2',
+  gridRow: '3',
+});
+
+container.appendChild(title);
+container.appendChild(score);
+container.appendChild(stats);
+container.appendChild(board);
+container.appendChild(controls);
 
 container.calculateLayout();
 const layout = container.getAllComputedLayout();
 // eslint-disable-next-line
 console.log(`Test output: ${layout}`);
+
+/*
+{
+  left: 0,
+  top: 0,
+  width: 500,
+  height: 500,
+  children: [
+    { left: 0, top: 0 },
+    { left: 0, top: 275 },
+    { left: 0, top: 25 },
+    { left: 100, top: 0 },
+    { left: 100, top: 275 },
+  ]
+}
+*/
 
 test('foo', (t) => {
   t.pass();
