@@ -46,7 +46,7 @@ container.appendChild(controls);
 container.calculateLayout();
 const layout = container.getAllComputedLayout();
 // eslint-disable-next-line
-console.log(`Test output: ${layout}`);
+console.log(`Test output:\n${JSON.stringify(layout, null, 2)}`);
 
 /*
 {

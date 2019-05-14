@@ -1,19 +1,58 @@
+import Parser from './parser';
+import Compose from './compose';
+
+let id = 1;
+
 export class Node {
-  constructor(config) {
-    console.error(config);
+  constructor(properties) {
+    this.parent = null;
+    this.children = [];
+    this.id = id++;
+    this.properties = properties;
+    this.computedProperties = {};
+    this.computedValues = {
+      width: 0,
+      height: 0,
+      left: 0,
+      top: 0,
+    };
   }
 
   static create(config) {
     return new Node(config);
   }
 
-  create() {}
+  static GridProperties = [
+    'height',
+    'width',
+    'gridTemplateRows',
+    'gridTemplateColumns',
+    'gridColumn',
+    'gridRow',
+  ]
 
-  appendChild() {}
+  appendChild(child) {
+    if(!(child instanceof Node)) {
+      throw new Error('appended Child must be instance of Node');
+    }
+    child.parent = this;
+    this.children.push(child);
+    return this;
+  }
 
-  calculateLayout() {}
+  calculateLayout(node) {
+    if(!node) node = this;
+    node.computedProperties = new Parser(node, node.properties).parse();
+    node.computedValues = new Compose(node, node.computedProperties).compose();
 
-  getAllComputedLayout() {}
+    node.children.map(child => child.calculateLayout(child));
+  }
+
+  getAllComputedLayout() {
+    const layout = this.computedValues;
+    layout.children = this.children.map(child => child.computedValues);
+    return layout;
+  }
 }
 
 export default Node;
