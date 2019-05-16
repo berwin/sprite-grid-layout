@@ -1,4 +1,4 @@
-import {isDef} from './util';
+import {isDef, hasSpan} from './util';
 
 class Parser {
   constructor(node, properties) {
@@ -51,14 +51,14 @@ class Parser {
     const gridTemplateRows = properties.gridTemplateRows && properties.gridTemplateRows.trim();
     return gridTemplateRows
       ? gridTemplateRows.split(' ')
-      : undefined;
+      : null;
   }
 
   parseGridTemplateColumns(properties) {
     const gridTemplateColumns = properties.gridTemplateColumns && properties.gridTemplateColumns.trim();
     return gridTemplateColumns
       ? gridTemplateColumns.split(' ')
-      : undefined;
+      : null;
   }
 
   /*
@@ -72,11 +72,21 @@ class Parser {
   }
 
   parseGridColumn(properties) {
-    const columnSpan = 1; // grid span default is 1
+    const rawValue = properties.gridColumn;
+    if(!rawValue) return null;
+
+    const defaultSpan = 1; // grid span default is 1
+    const values = rawValue.split('/').slice(0, 2);
+
+    const startLine = this.getGridItemLine(values[0]);
+    const startSpan = hasSpan(values[0]);
+    const endLine = this.getGridItemLine(values[1]);
+    const endSpan = hasSpan(values[1]);
+    const columnEndLine = endSpan ? (startLine + endLine) : endLine;
+
     return {
-      gridColumnStart: 1,
-      gridColumnEnd: 1,
-      columnSpan,
+      gridColumnStart: startSpan ? (endLine - startLine) : startLine,
+      gridColumnEnd: columnEndLine || (startLine + defaultSpan),
     };
   }
 
@@ -87,6 +97,13 @@ class Parser {
       griRowEnd: 1,
       rowSpan,
     };
+  }
+
+  getGridItemLine(str) {
+    const matched = str && str.match(/[0-9]+/);
+    return matched
+      ? Number(matched[0])
+      : null;
   }
 }
 
