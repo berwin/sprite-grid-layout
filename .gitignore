@@ -62,3 +62,6 @@ typings/
 
 # babel build output
 lib/
+
+# MacOs
+.DS_Store
