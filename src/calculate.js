@@ -1,4 +1,4 @@
-class Compose {
+class Calculate {
   constructor(node, properties) {
     this.node = node;
     this.properties = properties;
@@ -21,7 +21,7 @@ class Compose {
    *   [{width: '200', height: '50', name: '?'}, {width: '800', height: '50', name: '?'}]
    * ]
    */
-  compose() {
+  run() {
     return {
       width: 0,
       height: 0,
@@ -31,4 +31,4 @@ class Compose {
   }
 }
 
-export default Compose;
+export default Calculate;

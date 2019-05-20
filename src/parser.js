@@ -22,7 +22,7 @@ class Parser {
     const properties = {
       ...this.parsePublicProperties(this.properties),
       ...this.parseGridContainer(this.properties),
-      ...this.parseGridItem(this.properties),
+      ...this.parseGridItems(this.properties),
     };
     return Object.fromEntries(
       Object.entries(properties)
@@ -42,41 +42,61 @@ class Parser {
    */
   parseGridContainer(properties) {
     return {
-      gridTemplateRows: this.parseGridTemplateRows(properties),
-      gridTemplateColumns: this.parseGridTemplateColumns(properties),
+      gridTemplateRows: this.parseGridTemplateRows(properties.gridTemplateRows),
+      gridTemplateColumns: this.parseGridTemplateColumns(properties.gridTemplateRows),
     };
   }
 
-  parseGridTemplateRows(properties) {
-    const gridTemplateRows = properties.gridTemplateRows && properties.gridTemplateRows.trim();
-    return gridTemplateRows
+  parseGridTemplateRows(gridTemplateRows) {
+    if(!gridTemplateRows) return null;
+    // eslint-disable-next-line
+    return (gridTemplateRows = gridTemplateRows.trim())
       ? gridTemplateRows.split(' ')
       : null;
   }
 
-  parseGridTemplateColumns(properties) {
-    const gridTemplateColumns = properties.gridTemplateColumns && properties.gridTemplateColumns.trim();
-    return gridTemplateColumns
+  parseGridTemplateColumns(gridTemplateColumns) {
+    if(!gridTemplateColumns) return null;
+    // eslint-disable-next-line
+    return (gridTemplateColumns = gridTemplateColumns.trim())
       ? gridTemplateColumns.split(' ')
       : null;
   }
 
   /*
-   * Parser Grid item properties
+   * Parser Grid items properties
    */
-  parseGridItem(properties) {
+  parseGridItems(properties) {
     return {
-      gridColumn: this.parseGridColumn(properties),
-      gridRow: this.parseGridRow(properties),
+      ...this.parseGridColumn(properties.gridColumn),
+      ...this.parseGridRow(properties.gridRow),
     };
   }
 
-  parseGridColumn(properties) {
-    const rawValue = properties.gridColumn;
-    if(!rawValue) return null;
+  parseGridColumn(gridColumn) {
+    const {start, end} = this.parseItemsShorthands(gridColumn);
+    return {
+      gridColumnStart: start,
+      gridColumnEnd: end,
+    };
+  }
+
+  parseGridRow(gridRow) {
+    const {start, end} = this.parseItemsShorthands(gridRow);
+    return {
+      gridRowStart: start,
+      gridRowEnd: end,
+    };
+  }
+
+  /*
+   * The value to be parsed is: <grid-line> [ / <grid-line> ]?
+   */
+  parseItemsShorthands(value) {
+    if(!value) return {};
 
     const defaultSpan = 1; // grid span default is 1
-    const values = rawValue.split('/').slice(0, 2);
+    const values = value.split('/').slice(0, 2);
 
     const startLine = this.getGridItemLine(values[0]);
     const startSpan = hasSpan(values[0]);
@@ -85,17 +105,8 @@ class Parser {
     const columnEndLine = endSpan ? (startLine + endLine) : endLine;
 
     return {
-      gridColumnStart: startSpan ? (endLine - startLine) : startLine,
-      gridColumnEnd: columnEndLine || (startLine + defaultSpan),
-    };
-  }
-
-  parseGridRow(properties) {
-    const rowSpan = 1; // grid span default is 1
-    return {
-      gridRowStart: 1,
-      griRowEnd: 1,
-      rowSpan,
+      start: startSpan ? (endLine - startLine) : startLine,
+      end: columnEndLine || (startLine + defaultSpan),
     };
   }
 

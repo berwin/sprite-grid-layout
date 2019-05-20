@@ -1,5 +1,5 @@
 import Parser from './parser';
-import Compose from './compose';
+import Calculate from './calculate';
 
 let id = 1;
 
@@ -43,7 +43,7 @@ export class Node {
   calculateLayout(node) {
     if(!node) node = this;
     node.computedProperties = new Parser(node, node.properties).parse();
-    node.computedValues = new Compose(node, node.computedProperties).compose();
+    node.computedValues = new Calculate(node, node.computedProperties).run();
 
     node.children.map(child => child.calculateLayout(child));
   }
