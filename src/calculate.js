@@ -23,10 +23,16 @@ class Calculate {
    */
   run() {
     return {
-      width: 0,
-      height: 0,
+      ...this.calculateSize(this.properties),
       left: 0,
       top: 0,
+    };
+  }
+
+  calculateSize(properties) {
+    return {
+      width: properties.width,
+      height: properties.height,
     };
   }
 }
