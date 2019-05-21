@@ -3,3 +3,7 @@ export function isDef(v) {
 }
 
 export const hasSpan = str => str && (str.indexOf('span') >= 0);
+
+export function isRoot(node) {
+  return node.properties.gridTemplateColumns || node.properties.gridTemplateRows;
+}

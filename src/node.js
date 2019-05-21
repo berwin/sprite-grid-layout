@@ -42,10 +42,12 @@ export class Node {
 
   calculateLayout(node) {
     if(!node) node = this;
+    // The parser first
     node.computedProperties = new Parser(node, node.properties).parse();
-    node.computedValues = new Calculate(node, node.computedProperties).run();
-
     node.children.map(child => child.calculateLayout(child));
+
+    // And then calculate the value
+    node.computedValues = new Calculate(node, node.computedProperties).run();
   }
 
   getAllComputedLayout() {
