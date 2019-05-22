@@ -43,7 +43,7 @@ class Parser {
   parseGridContainer(properties) {
     return {
       gridTemplateRows: this.parseGridTemplateRows(properties.gridTemplateRows),
-      gridTemplateColumns: this.parseGridTemplateColumns(properties.gridTemplateRows),
+      gridTemplateColumns: this.parseGridTemplateColumns(properties.gridTemplateColumns),
     };
   }
 

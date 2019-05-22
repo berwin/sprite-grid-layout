@@ -9,16 +9,42 @@ class Calculate {
 
   init() {
     if(isRoot(this.node)) {
+      this.calculateNumberOfTracks();
       this.initMatrix();
       this.gridItemPlacementAlgorithm(this.node.children);
     }
   }
 
+  calculateNumberOfTracks() {
+    this.columnTracks = this.calculateTotalNumberOfColumns();
+    this.rowTracks = this.calculateTotalNumberOfRows();
+  }
+
+  calculateTotalNumberOfColumns() {
+    const number = this.properties.gridTemplateColumns.length;
+    return this.calculateTotalNumberOfTracks(number, 'gridColumnEnd');
+  }
+
+  calculateTotalNumberOfRows() {
+    const number = this.properties.gridTemplateRows.length;
+    return this.calculateTotalNumberOfTracks(number, 'gridRowEnd');
+  }
+
+  calculateTotalNumberOfTracks(minimum, gridEnd) {
+    let tracks = minimum || 0;
+    const children = this.node.children;
+    for(const node of children) {
+      const line = node.computedProperties[gridEnd];
+      // Because the number of tracks is one less than the number of grid lines.
+      const newTracks = line - 1;
+      if(newTracks > tracks) tracks = newTracks;
+    }
+    return tracks;
+  }
+
   initMatrix() {
-    const gridTemplateRows = this.properties.gridTemplateRows;
-    const gridTemplateColumns = this.properties.gridTemplateColumns;
-    const x = gridTemplateRows ? gridTemplateRows.length : 1;
-    const y = gridTemplateColumns ? gridTemplateColumns.length : 1;
+    const x = this.rowTracks;
+    const y = this.columnTracks;
     this.matrix = this.createMatrix(x, y);
   }
 
@@ -60,20 +86,6 @@ class Calculate {
       height: properties.height,
     };
   }
-
-  /*
-   * {
-   *   gridTemplateColumns: ['auto', '1fr'],
-   *   gridTemplateRows: ['auto', '1fr', 'auto']
-   * }
-   * To:
-   * [
-   *   [{w: x, h: y}, {w: x, h: y}],
-   *   [{w: x, h: y}, {w: x, h: y}],
-   *   [{w: x, h: y}, {w: x, h: y}]
-   * ]
-   */
-  calculateVirtualMatrix() {}
 
   /*
    * Resolves automatic positions of grid items into definite positions,
