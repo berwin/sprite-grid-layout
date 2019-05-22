@@ -52,7 +52,11 @@ class Calculate {
    * Create empty matrices
    */
   createMatrix(x, y) {
-    return new Array(x).fill(new Array(y));
+    const matrix = [];
+    while(x--) {
+      matrix.push(new Array(y));
+    }
+    return matrix;
   }
 
   /*
@@ -98,6 +102,30 @@ class Calculate {
     // Anonymous grid items are always auto-placed,
     // since their boxes can’t have any grid-placement properties specified.
     const anonymousItems = children.filter(item => isAnonymousItems(item.computedProperties));
+
+    this.placementItemsInMatrix(items);
+    console.log(this.matrix);
+  }
+
+  placementItemsInMatrix(items) {
+    for(const item of items) {
+      const property = item.computedProperties;
+      const rowStart = property.gridRowStart;
+      const rowEnd = property.gridRowEnd;
+      const colStart = property.gridColumnStart;
+      const colEnd = property.gridColumnEnd;
+
+      for(let x = rowStart; x < rowEnd; x++) {
+        for(let y = colStart; y < colEnd; y++) {
+          // Because the number of tracks is one less than the number of grid lines.
+          this.matrix[x - 1][y - 1] = item;
+        }
+      }
+    }
+  }
+
+  placementAnonymousItemsInMatrix(items) {
+    // ...
   }
 
   /*
