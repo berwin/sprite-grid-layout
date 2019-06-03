@@ -18,7 +18,7 @@ export class Node {
     };
   }
 
-  static create(config) {
+  static create(config = Object.create(null)) {
     return new Node(config);
   }
 

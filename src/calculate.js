@@ -1,4 +1,4 @@
-import {isRoot} from './util';
+import {isRoot, isUndef} from './util';
 
 class Calculate {
   constructor(node, properties) {
@@ -12,9 +12,14 @@ class Calculate {
       this.calculateNumberOfTracks();
       this.initMatrix();
       this.gridItemPlacementAlgorithm(this.node.children);
+      this.calculateTrackSize();
     }
   }
 
+  /*
+   * calculate a number of grid trancks.
+   * Attention: the number contains the track extended by the child element.
+   */
   calculateNumberOfTracks() {
     this.columnTracks = this.calculateTotalNumberOfColumns();
     this.rowTracks = this.calculateTotalNumberOfRows();
@@ -104,7 +109,7 @@ class Calculate {
     const anonymousItems = children.filter(item => isAnonymousItems(item.computedProperties));
 
     this.placementItemsInMatrix(items);
-    console.log(this.matrix);
+    this.placementAnonymousItemsInMatrix(anonymousItems);
   }
 
   placementItemsInMatrix(items) {
@@ -125,7 +130,17 @@ class Calculate {
   }
 
   placementAnonymousItemsInMatrix(items) {
-    // ...
+    if(!items.length) return;
+    const anonymousItems = items.slice();
+    const matrix = this.matrix;
+    for(const rowTracks of matrix) {
+      for(const [key, cell] of rowTracks.entries()) {
+        if(isUndef(cell)) {
+          rowTracks[key] = anonymousItems.shift();
+          if(!anonymousItems.length) return;
+        }
+      }
+    }
   }
 
   /*
@@ -133,9 +148,24 @@ class Calculate {
    * @param {number[]} [200, 800], - Grid track-list value
    * @returns {string[]} True track size, list this: ['200', '800']
    */
-  calculateTrackSize(values, sizes) {
-    // const totalSize =
-    // ...
+  calculateTrackSize() {
+    const px = /([0-9]+)px/;
+    const percentage = /([0-9]+)%/;
+    const auto = /(auto)/;
+    const fr = /([0-9]+)fr/;
+    const properties = this.node.computedProperties;
+    const rows = properties.gridTemplateRows;
+    const columns = properties.gridTemplateColumns;
+    const width = properties.width;
+    const height = properties.height;
+    console.log(rows, columns, width, height);
+  }
+
+  fillGridTemplateRows(rows) {
+    const idea = rows.length;
+    const actuality = this.matrix.length;
+    const count = actuality - idea;
+    return [...rows].concat(new Array(count).fill('auto'));
   }
 }
 
