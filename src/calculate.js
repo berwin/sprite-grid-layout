@@ -12,7 +12,7 @@ class Calculate {
       this.calculateNumberOfTracks();
       this.initMatrix();
       this.gridItemPlacementAlgorithm(this.node.children);
-      this.calculateTrackSize();
+      this.calculateTracksSize();
     }
   }
 
@@ -148,17 +148,73 @@ class Calculate {
    * @param {number[]} [200, 800], - Grid track-list value
    * @returns {string[]} True track size, list this: ['200', '800']
    */
-  calculateTrackSize() {
-    const px = /([0-9]+)px/;
-    const percentage = /([0-9]+)%/;
-    const auto = /(auto)/;
-    const fr = /([0-9]+)fr/;
+  calculateTracksSize() {
     const properties = this.node.computedProperties;
     const rows = properties.gridTemplateRows;
     const columns = properties.gridTemplateColumns;
     const width = properties.width;
     const height = properties.height;
-    console.log(rows, columns, width, height);
+    // console.log(rows, columns, width, height);
+    const rowTracks = this.calculateTrackSize(height, rows, 'row');
+    const columnTracks = this.calculateTrackSize(width, columns, 'column');
+    console.log('---->', rowTracks, columnTracks);
+  }
+
+  calculateTrackSize(totalSize, trackList, direction) {
+    const result = trackList.slice();
+    for(const [key, track] of result.entries()) {
+      this.calculateTrackSizeByPx(result, key, track);
+      this.calculateTrackSizeByPercentage(result, key, track, totalSize);
+      this.calculateTrackSizeByAuto(result, key, track, direction, this.matrix);
+    }
+
+    return result;
+  }
+
+  calculateTrackSizeByPx(result, i, track) {
+    const px = /([0-9]+)px/;
+    const sizeByPx = track.match(px);
+    if(!sizeByPx) return;
+    result[i] = sizeByPx[1];
+  }
+
+  calculateTrackSizeByPercentage(result, i, track, totalSize) {
+    const percentage = /([0-9]+)%/;
+    const sizeByPercentage = track.match(percentage);
+    if(!sizeByPercentage) return;
+    result[i] = (sizeByPercentage[1] / 100) * totalSize;
+  }
+
+  calculateTrackSizeByAuto(result, i, track, direction, matrix) {
+    const auto = /(auto)/;
+    const sizeByAuto = track.match(auto);
+    if(!sizeByAuto) return;
+    result[i] = direction === 'row'
+      ? this.calculateRowTrackSizeByAuto(matrix, i)
+      : this.calculateColumnTrackSizeByAuto(matrix, i);
+  }
+
+  calculateRowTrackSizeByAuto(matrix, n) {
+    let maxSize = 0;
+    for(const cell of matrix[n]) {
+      const height = cell.computedProperties.height;
+      if(height > maxSize) maxSize = height;
+    }
+    return maxSize;
+  }
+
+  calculateColumnTrackSizeByAuto(matrix, n) {
+    let maxSize = 0;
+    for(let i = 0; i < matrix.length; i++) {
+      const cell = matrix[i][n];
+      const width = cell.computedProperties.width;
+      if(width > maxSize) maxSize = width;
+    }
+    return maxSize;
+  }
+
+  calculateTrackSizeByFr() {
+    const fr = /([0-9]+)fr/;
   }
 
   fillGridTemplateRows(rows) {

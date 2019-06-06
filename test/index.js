@@ -25,16 +25,22 @@ const score = Node.create({
 const stats = Node.create({
   gridColumn: '1',
   gridRow: '2',
+  height: 250,
+  width: 100,
 });
 
 const board = Node.create({
   gridColumn: '2',
   gridRow: '1 / span 2',
+  width: 400,
+  height: 275,
 });
 
 const controls = Node.create({
   gridColumn: '2',
   gridRow: '3',
+  width: 400,
+  height: 25,
 });
 
 container.appendChild(title);
