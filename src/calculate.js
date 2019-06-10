@@ -1,4 +1,4 @@
-import {isRoot, isUndef} from './util';
+import {isRoot, isUndef, isNumber} from './util';
 
 class Calculate {
   constructor(node, properties) {
@@ -21,8 +21,10 @@ class Calculate {
    * Attention: the number contains the track extended by the child element.
    */
   calculateNumberOfTracks() {
-    this.columnTracks = this.calculateTotalNumberOfColumns();
-    this.rowTracks = this.calculateTotalNumberOfRows();
+    // this.columnTracks = this.calculateTotalNumberOfColumns();
+    // this.rowTracks = this.calculateTotalNumberOfRows();
+    this.numberOfColumns = this.calculateTotalNumberOfColumns();
+    this.numberOfRows = this.calculateTotalNumberOfRows();
   }
 
   calculateTotalNumberOfColumns() {
@@ -48,8 +50,8 @@ class Calculate {
   }
 
   initMatrix() {
-    const x = this.rowTracks;
-    const y = this.columnTracks;
+    const x = this.numberOfRows;
+    const y = this.numberOfColumns;
     this.matrix = this.createMatrix(x, y);
   }
 
@@ -154,10 +156,9 @@ class Calculate {
     const columns = properties.gridTemplateColumns;
     const width = properties.width;
     const height = properties.height;
-    // console.log(rows, columns, width, height);
-    const rowTracks = this.calculateTrackSize(height, rows, 'row');
-    const columnTracks = this.calculateTrackSize(width, columns, 'column');
-    console.log('---->', rowTracks, columnTracks);
+    this.rowTracks = this.calculateTrackSize(height, rows, 'row');
+    this.columnTracks = this.calculateTrackSize(width, columns, 'column');
+    console.log('---->', this.rowTracks, this.columnTracks);
   }
 
   calculateTrackSize(totalSize, trackList, direction) {
@@ -167,7 +168,7 @@ class Calculate {
       this.calculateTrackSizeByPercentage(result, key, track, totalSize);
       this.calculateTrackSizeByAuto(result, key, track, direction, this.matrix);
     }
-
+    this.calculateTrackSizeByFr(totalSize, result);
     return result;
   }
 
@@ -197,7 +198,10 @@ class Calculate {
   calculateRowTrackSizeByAuto(matrix, n) {
     let maxSize = 0;
     for(const cell of matrix[n]) {
-      const height = cell.computedProperties.height;
+      const property = cell.computedProperties;
+      const height = (property.gridRowEnd - property.gridRowStart) > 1
+        ? 0
+        : cell.computedProperties.height;
       if(height > maxSize) maxSize = height;
     }
     return maxSize;
@@ -207,21 +211,42 @@ class Calculate {
     let maxSize = 0;
     for(let i = 0; i < matrix.length; i++) {
       const cell = matrix[i][n];
-      const width = cell.computedProperties.width;
+      const property = cell.computedProperties;
+      const width = (property.gridColumnEnd - property.gridColumnStart) > 1
+        ? 0
+        : cell.computedProperties.width;
       if(width > maxSize) maxSize = width;
     }
     return maxSize;
   }
 
-  calculateTrackSizeByFr() {
+  calculateTrackSizeByFr(totalSize, trancks) {
     const fr = /([0-9]+)fr/;
-  }
+    let units = 0;
+    let fillSpace = 0;
 
-  fillGridTemplateRows(rows) {
-    const idea = rows.length;
-    const actuality = this.matrix.length;
-    const count = actuality - idea;
-    return [...rows].concat(new Array(count).fill('auto'));
+    for(const track of trancks) {
+      if(isNumber(track)) {
+        fillSpace += track;
+      } else {
+        const unit = track.match(fr);
+        if(unit) {
+          units += unit[1];
+        }
+      }
+    }
+
+    const leftoverSpace = totalSize - fillSpace;
+    const unitSize = leftoverSpace / units;
+
+    for(const [key, track] of trancks.entries()) {
+      // eslint-disable-next-line no-continue
+      if(isNumber(track)) continue;
+      const unit = track.match(fr);
+      if(unit) {
+        trancks[key] = unitSize * unit[1];
+      }
+    }
   }
 }
 
