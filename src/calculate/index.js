@@ -18,7 +18,6 @@ class Calculate {
       this.gridItemPlacementAlgorithm();
       this.calculateTracksSize();
       this.calculatePositions();
-      console.log(this.positions);
     }
   }
 
@@ -91,12 +90,7 @@ class Calculate {
    * ]
    */
   run() {
-    return {
-      width: this.properties.width,
-      height: this.properties.height,
-      left: 0,
-      top: 0,
-    };
+    return this.positions;
   }
 }
 

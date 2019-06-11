@@ -49,11 +49,6 @@ container.appendChild(stats);
 container.appendChild(board);
 container.appendChild(controls);
 
-container.calculateLayout();
-const layout = container.getAllComputedLayout();
-// eslint-disable-next-line
-console.log(`Test output:\n${JSON.stringify(layout, null, 2)}`);
-
 /*
 {
   left: 0,
@@ -70,6 +65,15 @@ console.log(`Test output:\n${JSON.stringify(layout, null, 2)}`);
 }
 */
 
-test('foo', (t) => {
-  t.pass();
+test('Basic Grid Layout', (t) => {
+  container.calculateLayout();
+  const layout = container.getAllComputedLayout();
+  const expected = [
+    {left: 0, top: 0},
+    {left: 0, top: 275},
+    {left: 0, top: 25},
+    {left: 100, top: 0},
+    {left: 100, top: 275},
+  ];
+  t.deepEqual(layout, expected);
 });

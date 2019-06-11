@@ -55,9 +55,7 @@ export class Node {
   }
 
   getAllComputedLayout() {
-    const layout = this.computedValues;
-    layout.children = this.children.map(child => child.computedValues);
-    return layout;
+    return this.computedValues;
   }
 }
 
