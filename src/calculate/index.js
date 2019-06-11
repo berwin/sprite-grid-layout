@@ -2,6 +2,7 @@ import {isRoot} from '../util';
 import TracksCount from './tracks-count';
 import Placement from './placement';
 import TrackSize from './tracks-size';
+import Position from './position';
 
 class Calculate {
   constructor(node, properties) {
@@ -16,7 +17,8 @@ class Calculate {
       this.initMatrix();
       this.gridItemPlacementAlgorithm();
       this.calculateTracksSize();
-      console.log(this.trackSize);
+      this.calculatePositions();
+      console.log(this.positions);
     }
   }
 
@@ -65,6 +67,10 @@ class Calculate {
    */
   calculateTracksSize() {
     this.trackSize = new TrackSize(this.node, this.matrix).calculate();
+  }
+
+  calculatePositions() {
+    this.positions = new Position(this.trackSize, this.node.children).calculate();
   }
 
   /*
