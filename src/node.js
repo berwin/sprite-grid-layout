@@ -40,11 +40,15 @@ export class Node {
     return this;
   }
 
+  parse(node) {
+    node.computedProperties = new Parser(node, node.properties).parse();
+    node.children.map(child => child.parse(child));
+  }
+
   calculateLayout(node) {
     if(!node) node = this;
     // The parser first
-    node.computedProperties = new Parser(node, node.properties).parse();
-    node.children.map(child => child.calculateLayout(child));
+    this.parse(node);
 
     // And then calculate the value
     node.computedValues = new Calculate(node, node.computedProperties).run();
